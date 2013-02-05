@@ -39,6 +39,10 @@ def normalize(hexv, minv=128, maxv=256):
     r, g, b = colorsys.hsv_to_rgb(h, s, v)
     return '#{:02x}{:02x}{:02x}'.format(int(r * 256), int(g * 256), int(b * 256))
 
+def darkness(hexv):
+  r, g, b = torgb(hexv)
+  darkness = sqrt((255 - r) ** 2 + (255 - g) ** 2 + (255 - b) ** 2)
+  return darkness
 
 def to_hsv(c):
     r, g, b = torgb(c)
@@ -55,7 +59,9 @@ if __name__ == '__main__':
     i = 0
     with open('colorz.html', 'w') as f:
         f.write("""<img src="file://{}" height=200/>""".format(WALLPAPER))
+        # sort by value, saturation, then hue
         colors = colorz(WALLPAPER, n=n)
+        colors.sort(key=lambda  x:darkness(x), reverse=True)
         for c in colors:
             if i == 0:
                 c = normalize(c, minv=0, maxv=32)
