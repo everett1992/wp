@@ -57,28 +57,22 @@ if __name__ == '__main__':
 
 
     i = 0
-    with open('colorz.html', 'w') as f:
-        f.write("""<img src="file://{}" height=200/>""".format(WALLPAPER))
-        # sort by value, saturation, then hue
-        colors = colorz(WALLPAPER, n=n)
-        colors.sort(key=lambda  x:darkness(x), reverse=True)
-        for c in colors:
-            if i == 0:
-                c = normalize(c, minv=0, maxv=32)
-            elif i == 8:
-                c = normalize(c, minv=128, maxv=192)
-            elif i < 8:
-                c = normalize(c, minv=160, maxv=224)
-            else:
-                c = normalize(c, minv=200, maxv=256)
-            c = normalize(c, minv=32, maxv=224)
-            f.write("""
-                <div style="background-color: {0}; width: 100%; height: 50px">{1}: {0} </div>
-                """.format(c, i)
-            )
-            xres += """*color{}: {}\n""".format(i, c)
-            cols += """export COLOR{}="{}"\n""".format(i, c)
-            i += 1
+    # sort by value, saturation, then hue
+    colors = colorz(WALLPAPER, n=n)
+    colors.sort(key=lambda  x:darkness(x), reverse=True)
+    for c in colors:
+        if i == 0:
+            c = normalize(c, minv=0, maxv=32)
+        elif i == 8:
+            c = normalize(c, minv=128, maxv=192)
+        elif i < 8:
+            c = normalize(c, minv=160, maxv=224)
+        else:
+            c = normalize(c, minv=200, maxv=256)
+        c = normalize(c, minv=32, maxv=224)
+        xres += """*color{}: {}\n""".format(i, c)
+        cols += """export COLOR{}="{}"\n""".format(i, c)
+        i += 1
 
     with open(XRESOURCES, 'w') as f:
         f.write(xres)
