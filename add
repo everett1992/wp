@@ -1,15 +1,20 @@
 #!/bin/bash
-wallpaper_dir=~/.config/herbstluftwm/backgrounds/
+
+function indent {
+  echo ":: $*"
+}
+
 dir=$(readlink -f $(dirname $0))
+wallpaper_dir=${wallpaper_dir:-$0/backgrounds/}
 
 if [ 0 = $# ]; then
-  echo "No file argument provided"
+  indent "No file argument provided"
   exit 1
 fi
 
 for file in $*; do
   if [ ! -f $file ]; then
-    echo "File '$file' doesn't exits"
+    indent "File '$file' doesn't exits"
     exit 1
   fi
 done

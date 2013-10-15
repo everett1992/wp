@@ -1,0 +1,29 @@
+#!/bin/bash
+
+function indent {
+  echo ":: $*"
+}
+
+export dir=$(readlink -f $(dirname $0))
+export wallpaper_dir=${wallpaper_dir:-$dir/backgrounds/}
+
+prog=$1
+shift
+
+case $prog in
+  "add")
+    $dir/add $*
+    ;;
+  "rm")
+    $dir/rm $*
+    ;;
+  "change")
+    $dir/change $*
+    ;;
+  "ls")
+    $dir/ls $*
+    ;;
+  *)
+    indent "$prog a not recognised directive"
+    ;;
+esac

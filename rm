@@ -1,0 +1,17 @@
+#!/bin/bash
+
+dir=$(readlink -f $(dirname $0))
+wallpaper_dir=${wallpaper_dir:-$dir/backgrounds/}
+
+source $dir/functions
+
+if [ 0 = $# ]; then
+  indent "No file argument provided"
+  exit 1
+fi
+
+for file in $*; do
+  indent "Removing $file"
+  rm ${wallpaper_dir}/${file}
+  rm ${wallpaper_dir}/.${file}.{colors,Xres}
+done
