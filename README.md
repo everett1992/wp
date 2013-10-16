@@ -1,12 +1,33 @@
-color_theme_generator
-=====================
-creates color themes from an image
+# wp
 
-To genereate colors:
-  color_detect.py file_name
+wp is a small tool I use to generate color schemes from images, and manage desktop wallpapers.
 
-To use colors in xterm/urxvt
-  xrdb -merge .background_name.Xres
+## Usage
 
-To use colors in general bash scripts
-  source .background_name.color
+```
+$ wp add [file]
+```
+
+Generates color files .[file].colors and .[file].Xres which can be sourced by shell
+scripts and xrdb respectivly. The color files and the image are added to the backgrounds directory.
+
+```
+$ wp change [file]
+```
+
+Changes the background image to the file passed, loads the .Xres file
+into xrdb, and links the .colors file to ~/.colors. If no file is passed a random file from the backgrounds
+directory is used.
+
+
+```
+$ wp rm [file]
+```
+
+Removes the image and it's color files from the backgrounds directory.
+
+```
+$ wp ls
+```
+
+Lists the images in the backgrounds folder.
