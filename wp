@@ -23,6 +23,9 @@ case $prog in
   "ls")
     $dir/ls $*
     ;;
+  "colors")
+    $dir/display
+    ;;
   *)
     indent "$prog a not recognised directive"
     ;;
