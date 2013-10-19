@@ -5,7 +5,7 @@ function indent {
 }
 
 dir=$(readlink -f $(dirname $0))
-wallpaper_dir=${wallpaper_dir:-$0/backgrounds/}
+wallpaper_dir=${wallpaper_dir:-~/.wallpapers/}
 
 if [ 0 = $# ]; then
   indent "No file argument provided"

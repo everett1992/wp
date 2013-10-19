@@ -1,7 +1,7 @@
 #!/bin/bash
 
 dir=$(readlink -f $(dirname $0))
-wallpaper_dir=${wallpaper_dir:-$dir/backgrounds/}
+wallpaper_dir=${wallpaper_dir:-~/.wallpapers/}
 
 source $dir/functions
 

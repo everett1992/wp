@@ -5,7 +5,7 @@ function indent {
 }
 
 export dir=$(readlink -f $(dirname $0))
-export wallpaper_dir=${wallpaper_dir:-$dir/backgrounds/}
+export wallpaper_dir=${wallpaper_dir:-~/.wallpapers/}
 
 prog=$1
 shift
