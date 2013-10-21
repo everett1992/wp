@@ -2,6 +2,9 @@
 
 wp is a small tool I use to generate color schemes from images, and manage desktop wallpapers.
 
+The color extraction scripts were taken from [this blog post](http://charlesleifer.com/blog/using-python-and-k-means-to-find-the-dominant-colors-in-images/)
+ with normalization reddit user radiosilence.
+
 ## Usage
 
 ```
@@ -15,9 +18,9 @@ scripts and xrdb respectivly. The color files and the image are added to the bac
 $ wp change [file]
 ```
 
-Changes the background image to the file passed, loads the .Xres file
-into xrdb, and links the .colors file to ~/.colors. If no file is passed a random file from the backgrounds
-directory is used.
+Changes the background image to a random image from the ~/.wallpapers directory, or the file passed, and  loads the .Xres file
+into xrdb so xterm or urxvt will use the colors. It also links a script to ~/.colors. If you `source ~/.colors` in a script 
+you can use the generated colors with `$COLOR0`, `$COLOR1`, ...
 
 
 ```
