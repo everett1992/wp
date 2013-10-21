@@ -1,3 +1,5 @@
 # ignore git files
 *.swp
 *.swo
+
+.current

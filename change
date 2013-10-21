@@ -21,6 +21,8 @@ dirname=$(dirname $background)
 
 feh --bg-scale $background
 
+echo "$background" > $dir/.current
+
 if [ $? -ne 0 ]; then
   indent "Failed to set $background as background"
 else
