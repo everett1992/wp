@@ -5,6 +5,10 @@ wp is a small tool I use to generate color schemes from images, and manage deskt
 The color extraction scripts were taken from [this blog post](http://charlesleifer.com/blog/using-python-and-k-means-to-find-the-dominant-colors-in-images/)
  with normalization reddit user radiosilence.
 
+## Dependencies
+
+As far as I know this only relies on PIL, python image libray. I was able to fuflil this dependencies with the pthon-pillow library on Arch Linux.
+
 ## Usage
 
 ```
