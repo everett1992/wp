@@ -1,0 +1,87 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+import shutil
+import errno
+import glob
+
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc: # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else: raise
+
+def get_wp_dir():
+    wallpapers_dir=os.getenv('WALLPAPERS_DIR', os.environ['HOME']+'/.wallpapers')
+    try:
+        mkdir_p(wallpapers_dir)
+        return wallpapers_dir
+    except:
+        raise
+
+###############################################################################
+# ADD image files to your wallpaper directory and processes colors
+# TODO check for file input type
+# TODO compute color scheme :)
+def add(args):
+    wp_dir=get_wp_dir()
+    for f in args.arg:
+        f_base=os.path.basename(f)
+        f_dst=wp_dir+'/'+f_base
+        shutil.copy(f,f_dst)
+
+###############################################################################
+# CHANGE current background.  If no args provided, choose a random wallpaper
+def change(args):
+    print args # placeholder
+
+###############################################################################
+# LIST all wallpapers in collection
+def list(args):
+    wp_dir=get_wp_dir()
+    types=('*.jpg','*.jpeg','*.png')
+    files=[]
+    for t in types:
+        files.extend(glob.glob(wp_dir+'/'+t))
+
+    if(args.a):
+        print '\n'.join(files)
+    else:
+        print '\n'.join([os.path.basename(f) for f in files])
+
+###############################################################################
+# REMOVE a wallpaper from your collection
+def remove(args):
+    print args # placeholder
+
+##############################################################################
+# top-level parser
+parser=argparse.ArgumentParser()
+parser.add_argument('-v', '--verbose', action='store_true', help='verbose output')
+parser.add_argument('--version', action='version', version='%(prog)s %(wp.version)s')
+
+# sub-parsers
+subparsers=parser.add_subparsers()
+# add
+parser_add=subparsers.add_parser('add', description='add image(s) to wallpaper collection')
+parser_add.add_argument('arg', nargs='+', help='image file(s) to add')
+parser_add.set_defaults(func=add)
+# change
+parser_change=subparsers.add_parser('change', description='change current wallpaper')
+parser_change.add_argument('arg', nargs=1, help='image to set as wallpaper')
+parser_change.set_defaults(func=change)
+# list
+parser_list=subparsers.add_parser('list', description='list images in wallpaper collection')
+parser_list.add_argument('-a', action='store_true', help='absolute path')
+parser_list.set_defaults(func=list)
+# remove
+parser_remove=subparsers.add_parser('remove', description='remove image(s) from wallpaper collection')
+parser_remove.add_argument('arg', nargs='+', help='image(s) to remove')
+parser_remove.set_defaults(func=remove)
+
+args=parser.parse_args()
+args.func(args)
+

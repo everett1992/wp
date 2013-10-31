@@ -56,10 +56,19 @@ if __name__ == '__main__':
         n = int(sys.argv[2])
 
 
-    i = 0
-    # sort by value, saturation, then hue
+    #############################################################
+    # perform cluster analysis on image    
     colors = colorz(WALLPAPER, n=n)
-    colors.sort(key=lambda  x:darkness(x), reverse=True)
+    
+    #############################################################
+    # fit colors to pallet model
+    #fit_to_color_model
+    #expand_color_pallet <-- adds highlights and shadows
+
+    #############################################################
+    # sort by value, saturation, then hue
+    colors.sort(key=lambda  x:darkness(x), reverse=True);
+    i = 0
     for c in colors:
         if i == 0:
             c = normalize(c, minv=0, maxv=32)
@@ -73,6 +82,13 @@ if __name__ == '__main__':
         xres += """*color{}: {}\n""".format(i, c)
         cols += """export COLOR{}="{}"\n""".format(i, c)
         i += 1
+
+    #############################################################
+    # export array of colors to various file formats
+
+    # color
+
+    # xres
 
     with open(XRESOURCES, 'w') as f:
         f.write(xres)
