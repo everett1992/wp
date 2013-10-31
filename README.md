@@ -24,13 +24,13 @@ you can use the generated colors with `$COLOR0`, `$COLOR1`, ...
 
 
 ```
-$ wp rm [file]
+$ wp remove [file]
 ```
 
 Removes the image and it's color files from the backgrounds directory.
 
 ```
-$ wp ls
+$ wp list
 ```
 
 Lists the images in the backgrounds folder.
