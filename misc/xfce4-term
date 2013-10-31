@@ -29,4 +29,3 @@ line_replace="$color_string"
 
 
 sed -i "s/$line_match/$line_replace/" $terminalrc
-cat $terminalrc
