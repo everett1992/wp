@@ -10,7 +10,25 @@ export wallpaper_dir=${wallpaper_dir:-~/.wallpapers/}
 prog=$1
 shift
 
+function usage {
+  printf "%b" "
+  $0 [action] [options]
+
+Actions
+- usage:         Print this help massage.
+- add [file]...: Add file, or files, to wallpaper database.
+- rm  [file]...: Remove file, or files, from wallpaper database.
+- change [file]: Set the wallpaper to file, or a random wallpaper
+                 from the wallpaper database.
+- ls:            List all wallpapers in the database.
+- colors:        Display the current set of colors.
+"
+}
+
 case $prog in
+  "usage" | "-h" | "--help")
+    usage
+    ;;
   "add")
     $dir/add $*
     ;;
