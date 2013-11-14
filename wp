@@ -1,18 +1,178 @@
 #!/bin/bash
 
+function main {
+
+  # Snippet from SO user Dave Dopson http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+  SOURCE="${BASH_SOURCE[0]}"
+  # resolve $SOURCE until the file is no longer a symlink
+  while [ -h "$SOURCE" ]; do
+    DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+    SOURCE="$(readlink "$SOURCE")"
+    # if $SOURCE was a relative symlink, we need to resolve it
+    # relative to the path where the symlink file was located
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+  done
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+  WALLPAPER_DIR=${WALLPAPER_DIR:-~/.wallpapers/}
+
+  prog=$1
+  shift
+
+  case $prog in
+    "usage" | "-h" | "--help")
+      usage
+      ;;
+    "add")
+      add $*
+      ;;
+    "rm" | "remove")
+      remove $*
+      ;;
+    "change")
+      change $*
+      ;;
+    "current")
+      current $*
+      ;;
+    "ls" | "list")
+      list $*
+      ;;
+    "colors")
+      colors
+      ;;
+    *)
+      indent "$prog is not a recognised directive"
+      ;;
+  esac
+}
+
+#:: Prety print function
 function indent {
   echo ":: $*"
 }
 
-export dir=$(readlink -f $(dirname $0))
-export wallpaper_dir=${wallpaper_dir:-~/.wallpapers/}
+#:: Directives
 
-prog=$1
-shift
+function add {
+  if [ 0 = $# ]; then
+    indent "No file argument provided"
+    exit 1
+  fi
+
+  files=$*
+
+  for file in $files; do
+    if [ ! -f $file ]; then
+      indent "File '$file' doesn't exits"
+      exit 1
+    fi
+  done
+
+  cp $files $WALLPAPER_DIR
+  cd $WALLPAPER_DIR
+
+  for file in $*; do
+    echo ":: Generating .$file.colors and .$file.Xres in $PWD"
+    python2 $DIR/py/color_detect.py $file
+  done
+}
+
+function remove {
+  if [ 0 = $# ]; then
+    indent "No file argument provided"
+    exit 1
+  fi
+
+  for file in $*; do
+    indent "Removing $file"
+    rm ${WALLPAPER_DIR}/${file}
+    rm ${WALLPAPER_DIR}/.${file}.{colors,Xres}
+  done
+}
+
+function change {
+  #:: Select a random background from WALLPAPER_DIR, or use the passed background
+  if [ -z $1 ]; then
+    background=$(find $WALLPAPER_DIR -type f \( -name '*.jpg' -o -name '*.png' \) -print0 | shuf -n1 -z | xargs -0)
+  else
+    background=$WALLPAPER_DIR/$1
+
+    if [ ! -f $background ]; then
+      indent "$1 does not exist in $WALLPAPER_DIR"
+      exit 1
+    fi
+  fi
+
+  if [ -f ${background}.Xres ] || [ -f ${background}.colors ]; then
+    indent "Could not find ${background}.Xres or ${background}.colors"
+    exit 1
+  fi
+
+  filename=$(basename $background)
+  dirname=$(dirname $background)
+
+  #:: Set the background
+  feh --bg-scale $background
+
+  #:: Record the current background
+  ln -sf $background  $WALLPAPER_DIR/.current
+
+  if [ $? -ne 0 ]; then
+    indent "Failed to set $background as background"
+  else
+    indent "Set $background as background"
+
+    #:: Set the colorscheme
+    ln -f ${dirname}/.${filename}.colors ~/.colors
+    xrdb ${dirname}/.${filename}.Xres
+  fi
+}
+
+function current {
+  indent $(readlink -f $WALLPAPER_DIR/.current)
+}
+
+function list {
+  ls $* $WALLPAPER_DIR
+}
+
+function colors {
+  # Original: http://frexx.de/xterm-256-notes/
+  #           http://frexx.de/xterm-256-notes/data/colortable16.sh
+  # Modified by Aaron Griffin
+  # and further by Kazuo Teramoto
+  FGNAMES=(' black ' '  red  ' ' green ' ' yellow' '  blue ' 'magenta' '  cyan ' ' white ')
+  BGNAMES=('DFT' 'BLK' 'RED' 'GRN' 'YEL' 'BLU' 'MAG' 'CYN' 'WHT')
+
+  echo "     ┌──────────────────────────────────────────────────────────────────────────┐"
+  for b in {0..8}; do
+    ((b>0)) && bg=$((b+39))
+
+    echo -en "\033[0m ${BGNAMES[b]} │ "
+    
+    for f in {0..7}; do
+      echo -en "\033[${bg}m\033[$((f+30))m ${FGNAMES[f]} "
+    done
+    
+    echo -en "\033[0m │"
+    echo -en "\033[0m\n\033[0m     │ "
+    
+    for f in {0..7}; do
+      echo -en "\033[${bg}m\033[1;$((f+30))m ${FGNAMES[f]} "
+    done
+
+    echo -en "\033[0m │"
+    echo -e "\033[0m"
+
+    ((b<8)) &&
+    echo "     ├──────────────────────────────────────────────────────────────────────────┤"
+  done
+  echo "     └──────────────────────────────────────────────────────────────────────────┘"
+}
 
 function usage {
-  printf "%b" "
-  $0 [action] [options]
+  printf "%b" "  $0 [action] [options]
 
 Actions
 - usage:         Print this help massage.
@@ -20,31 +180,11 @@ Actions
 - rm  [file]...: Remove file, or files, from wallpaper database.
 - change [file]: Set the wallpaper to file, or a random wallpaper
                  from the wallpaper database.
+- current:       List the current background
 - ls:            List all wallpapers in the database.
 - colors:        Display the current set of colors.
 "
 }
 
-case $prog in
-  "usage" | "-h" | "--help")
-    usage
-    ;;
-  "add")
-    $dir/add $*
-    ;;
-  "rm")
-    $dir/rm $*
-    ;;
-  "change")
-    $dir/change $*
-    ;;
-  "ls")
-    $dir/ls $*
-    ;;
-  "colors")
-    $dir/display
-    ;;
-  *)
-    indent "$prog a not recognised directive"
-    ;;
-esac
+#:: End function declaration, begin executing
+main $*
