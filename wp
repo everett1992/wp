@@ -113,7 +113,7 @@ function change {
   dirname=$(dirname $background)
 
   #:: Set the background
-  feh --bg-scale $background
+  feh --bg-fill $background
 
   #:: Record the current background
   ln -sf $background  $WALLPAPER_DIR/.current
