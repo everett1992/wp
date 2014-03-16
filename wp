@@ -94,7 +94,7 @@ function remove {
 function change {
   #:: Select a random background from WALLPAPER_DIR, or use the passed background
   if [ -z $1 ]; then
-    background=$(find $WALLPAPER_DIR -type f \( -name '*.jpg' -o -name '*.png' \) -print0 | shuf -n1 -z | xargs -0)
+    background=$(find $WALLPAPER_DIR -type f \( -name '*.jpg' -o -name '*.png' \) | shuf -n1)
   else
     background=$WALLPAPER_DIR/$1
 
