@@ -23,6 +23,9 @@ function main {
     "usage" | "-h" | "--help")
       usage
       ;;
+    "update")
+      update
+      ;;
     "add")
       add $*
       ;;
@@ -53,6 +56,14 @@ function indent {
 }
 
 #:: Directives
+
+function update {
+  for f in *
+  do
+    mv $f $(echo $f | sed 's/ //g') >/dev/null 2>&1
+    wp add $(echo $f | sed 's/ //g')
+  done;
+}
 
 function add {
   if [ 0 = $# ]; then
@@ -197,6 +208,7 @@ Actions
 - current:       List the current background
 - ls:            List all wallpapers in the database.
 - colors:        Display the current set of colors.
+- update:        Add any files in the $WALLPAPER_DIR directory. 
 "
 }
 
