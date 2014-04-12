@@ -112,8 +112,14 @@ function change {
   filename=$(basename $background)
   dirname=$(dirname $background)
 
+  command -v gsettings >/dev/null 2>&1
+
   #:: Set the background
-  feh --bg-fill $background
+  if [ $? ]; then
+    gsettings set org.gnome.desktop.background picture-uri "file://$background"
+  else
+    feh --bg-fill $background
+  fi
 
   #:: Record the current background
   ln -sf $background  $WALLPAPER_DIR/.current
