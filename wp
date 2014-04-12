@@ -127,7 +127,9 @@ function change {
     ln -f ${dirname}/.${filename}.colors ~/.colors
     ln -f ${dirname}/.${filename}.gnome ~/.gnomecolors
 
-    if [ command -v gconftool-2 >/dev/null 2>&1 ]; then
+    command -v gconftool-2 >/dev/null 2>&1
+    
+    if [ $? ]; then
       gconftool-2 --set /apps/gnome-terminal/profiles/Default/palette --type string \"$(cat ~/.gnomecolors)\"
     fi
 

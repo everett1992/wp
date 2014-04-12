@@ -83,6 +83,8 @@ if __name__ == '__main__':
 
         i += 1
 
+    gnome += "\n"
+
     with open(XRESOURCES, 'w') as f:
         f.write(xres)
     with open(COLORS, 'w') as f:
