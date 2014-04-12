@@ -16,6 +16,14 @@ function main {
 
   WALLPAPER_DIR=${WALLPAPER_DIR:-~/.wallpapers/}
 
+  # if [ ! -e WALLPAPER_DIR ]; then
+  #   if [ ! -d WALLPAPER_DIR ]; then
+  #     indent "ERROR: must create wallpaper directory. "
+  #     exit 1
+  #   fi
+  # fi
+
+
   prog=$1
   shift
 
@@ -58,14 +66,19 @@ function indent {
 #:: Directives
 
 function update {
-  for f in *
+  for f in ~/.wallpapers/*
   do
     mv $f $(echo $f | sed 's/ //g') >/dev/null 2>&1
-    wp add $(echo $f | sed 's/ //g')
   done;
+
+  set -- $(ls ~/.wallpapers/*)
+
+  add $*
 }
 
 function add {
+
+
   if [ 0 = $# ]; then
     indent "No file argument provided"
     exit 1
@@ -80,7 +93,7 @@ function add {
     fi
   done
 
-  cp $files $WALLPAPER_DIR
+  cp $files $WALLPAPER_DIR >/dev/null 2>&1
   cd $WALLPAPER_DIR
 
   for file in $*; do
