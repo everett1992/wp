@@ -15,14 +15,10 @@ function main {
   DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
   WALLPAPER_DIR=${WALLPAPER_DIR:-~/.wallpapers/}
-
-  # if [ ! -e WALLPAPER_DIR ]; then
-  #   if [ ! -d WALLPAPER_DIR ]; then
-  #     indent "ERROR: must create wallpaper directory. "
-  #     exit 1
-  #   fi
-  # fi
-
+  
+  if [ ! -e WALLPAPER_DIR ]; then
+    mkdir WALLPAPER_DIR
+  fi
 
   prog=$1
   shift
@@ -66,19 +62,17 @@ function indent {
 #:: Directives
 
 function update {
-  for f in ~/.wallpapers/*
+  for f in $WALLPAPER_DIR
   do
     mv $f $(echo $f | sed 's/ //g') >/dev/null 2>&1
   done;
 
-  set -- $(ls ~/.wallpapers/*)
+  set -- $(ls $WALLPAPER_DIR/*)
 
   add $*
 }
 
 function add {
-
-
   if [ 0 = $# ]; then
     indent "No file argument provided"
     exit 1
@@ -86,18 +80,11 @@ function add {
 
   files=$*
 
-  for file in $files; do
-    if [ ! -f $file ]; then
-      indent "File '$file' doesn't exits"
-      exit 1
-    fi
-  done
-
   cp $files $WALLPAPER_DIR >/dev/null 2>&1
   cd $WALLPAPER_DIR
 
   for file in $*; do
-    echo ":: Generating .$file.colors and .$file.Xres in $PWD"
+    echo ":: Generating .$file.(colors|Xres|gnome) in $WALLPAPER_DIR"
     python2 $DIR/py/color_detect.py $file
   done
 }
