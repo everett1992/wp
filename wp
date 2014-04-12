@@ -78,14 +78,18 @@ function add {
     exit 1
   fi
 
-  files=$*
-
-  cp $files $WALLPAPER_DIR >/dev/null 2>&1
+  cp $* $WALLPAPER_DIR >/dev/null 2>&1
   cd $WALLPAPER_DIR
 
   for file in $*; do
-    echo ":: Generating .$file.(colors|Xres|gnome) in $WALLPAPER_DIR"
-    python2 $DIR/py/color_detect.py $file
+    if [ ! -e .$file.colors ]; then
+      if [ ! -e .$file.gnome ]; then
+        if [ ! -e .$file.Xres ]; then
+          echo ":: Generating .$file.(colors|Xres|gnome) in $WALLPAPER_DIR"
+          python2 $DIR/py/color_detect.py $file
+        fi
+      fi
+    fi
   done
 }
 
