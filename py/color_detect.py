@@ -10,13 +10,15 @@ if len(sys.argv) < 2:
 
 print sys.argv[1]
 
-WALLPAPER = sys.argv[1]
-filename = WALLPAPER.split('/').pop()
-COLORS = ".{0}.colors".format(filename)
+WALLPAPER  = sys.argv[1]
+filename   = WALLPAPER.split('/').pop()
+COLORS     = ".{0}.colors".format(filename)
 XRESOURCES = ".{0}.Xres".format(filename)
+GNOME      = ".{0}.gnome".format(filename)
 
-cols = ''
-xres = ''
+cols  = ''
+xres  = ''
+gnome = ''
 
 def torgb(hexv):
     hexv = hexv[1:]
@@ -55,8 +57,10 @@ if __name__ == '__main__':
     else:
         n = int(sys.argv[2])
 
-
     i = 0
+
+    gn = ""
+
     # sort by value, saturation, then hue
     colors = colorz(WALLPAPER, n=n)
     colors.sort(key=lambda  x:darkness(x), reverse=True)
@@ -72,9 +76,17 @@ if __name__ == '__main__':
         c = normalize(c, minv=32, maxv=224)
         xres += """*color{}: {}\n""".format(i, c)
         cols += """export COLOR{}="{}"\n""".format(i, c)
+        
+        if i > 0:
+            gnome += ":"
+        gnome += c
+
         i += 1
 
     with open(XRESOURCES, 'w') as f:
         f.write(xres)
     with open(COLORS, 'w') as f:
         f.write(cols)
+    with open(GNOME, 'w') as f:
+        f.write(gnome)
+
