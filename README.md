@@ -7,7 +7,8 @@ The color extraction scripts were taken from [this blog post](http://charlesleif
 
 ## Dependencies
 
-As far as I know this only relies on PIL, python image libray. I was able to fuflil this dependencies with the pthon-pillow library on Arch Linux.
+As far as I know this only relies on PIL, python image library. I was able to fulfill this dependency with the `python-pillow` package on Arch Linux.
+On other systems, `pip install Pillow`.
 
 ## Usage
 
