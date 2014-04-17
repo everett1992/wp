@@ -15,13 +15,25 @@ function main {
   DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
   WALLPAPER_DIR=${WALLPAPER_DIR:-~/.wallpapers/}
-  
-  if [ ! -e WALLPAPER_DIR ]; then
-    mkdir WALLPAPER_DIR
+
+  if [ ! -e $WALLPAPER_DIR ]; then
+    mkdir $WALLPAPER_DIR
   fi
 
   prog=$1
   shift
+
+  gnome=false
+  declare -a files
+
+  while [ $# -gt 0 ] ; do
+          case "$1" in
+                  --gnome) gnome=true ; shift;;
+                  --) shift ;;
+                  -*) echo "bad option '$1'" ; exit 1 ;;
+                  *) files=("${files[@]}" "$1") ; shift ;;
+           esac
+  done
 
   case $prog in
     "usage" | "-h" | "--help")
@@ -31,19 +43,19 @@ function main {
       update
       ;;
     "add")
-      add $*
+      add $files
       ;;
     "rm" | "remove")
-      remove $*
+      remove $files
       ;;
     "change")
-      change $*
+      change $files
       ;;
     "current")
-      current $*
+      current $files
       ;;
     "ls" | "list")
-      list $*
+      list $files
       ;;
     "colors")
       colors
@@ -85,7 +97,7 @@ function add {
     if [ ! -e .$file.colors ]; then
       if [ ! -e .$file.gnome ]; then
         if [ ! -e .$file.Xres ]; then
-          echo ":: Generating .$file.(colors|Xres|gnome) in $WALLPAPER_DIR"
+          indent "Generating color schemes for $file in $WALLPAPER_DIR"
           python2 $DIR/py/color_detect.py $file
         fi
       fi
@@ -127,10 +139,8 @@ function change {
   filename=$(basename $background)
   dirname=$(dirname $background)
 
-  command -v gsettings >/dev/null 2>&1
-
   #:: Set the background
-  if [ $? ]; then
+  if $gnome; then
     gsettings set org.gnome.desktop.background picture-uri "file://$background"
   else
     feh --bg-fill $background
@@ -146,11 +156,8 @@ function change {
 
     #:: Set the colorscheme
     ln -f ${dirname}/.${filename}.colors ~/.colors
-    ln -f ${dirname}/.${filename}.gnome ~/.gnomecolors
-
-    command -v gconftool-2 >/dev/null 2>&1
-    
-    if [ $? ]; then
+    if $gnome; then
+      ln -f ${dirname}/.${filename}.gnome ~/.gnomecolors
       gconftool-2 --set /apps/gnome-terminal/profiles/Default/palette --type string \"$(cat ~/.gnomecolors)\"
     fi
 
