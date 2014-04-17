@@ -27,8 +27,6 @@ Changes the background image to a random image from the ~/.wallpapers directory,
 into xrdb so xterm or urxvt will use the colors. It also links a script to ~/.colors. If you `source ~/.colors` in a script 
 you can use the generated colors with `$COLOR0`, `$COLOR1`, ...
 
-** Now updates Gnome-Terminal's colour scheme when performing a `wp change`, iff it's appropriate. **
-
 
 ```
 $ wp rm [file]

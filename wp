@@ -15,10 +15,6 @@ function main {
   DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
   WALLPAPER_DIR=${WALLPAPER_DIR:-~/.wallpapers/}
-  
-  if [ ! -e WALLPAPER_DIR ]; then
-    mkdir WALLPAPER_DIR
-  fi
 
   prog=$1
   shift
@@ -26,9 +22,6 @@ function main {
   case $prog in
     "usage" | "-h" | "--help")
       usage
-      ;;
-    "update")
-      update
       ;;
     "add")
       add $*
@@ -61,35 +54,27 @@ function indent {
 
 #:: Directives
 
-function update {
-  for f in $WALLPAPER_DIR
-  do
-    mv $f $(echo $f | sed 's/ //g') >/dev/null 2>&1
-  done;
-
-  set -- $(ls $WALLPAPER_DIR/*)
-
-  add $*
-}
-
 function add {
   if [ 0 = $# ]; then
     indent "No file argument provided"
     exit 1
   fi
 
-  cp $* $WALLPAPER_DIR >/dev/null 2>&1
+  files=$*
+
+  for file in $files; do
+    if [ ! -f $file ]; then
+      indent "File '$file' doesn't exits"
+      exit 1
+    fi
+  done
+
+  cp $files $WALLPAPER_DIR
   cd $WALLPAPER_DIR
 
   for file in $*; do
-    if [ ! -e .$file.colors ]; then
-      if [ ! -e .$file.gnome ]; then
-        if [ ! -e .$file.Xres ]; then
-          echo ":: Generating .$file.(colors|Xres|gnome) in $WALLPAPER_DIR"
-          python2 $DIR/py/color_detect.py $file
-        fi
-      fi
-    fi
+    echo ":: Generating .$file.colors and .$file.Xres in $PWD"
+    python2 $DIR/py/color_detect.py $file
   done
 }
 
@@ -127,14 +112,8 @@ function change {
   filename=$(basename $background)
   dirname=$(dirname $background)
 
-  command -v gsettings >/dev/null 2>&1
-
   #:: Set the background
-  if [ $? ]; then
-    gsettings set org.gnome.desktop.background picture-uri "file://$background"
-  else
-    feh --bg-fill $background
-  fi
+  feh --bg-fill $background
 
   #:: Record the current background
   ln -sf $background  $WALLPAPER_DIR/.current
@@ -146,14 +125,6 @@ function change {
 
     #:: Set the colorscheme
     ln -f ${dirname}/.${filename}.colors ~/.colors
-    ln -f ${dirname}/.${filename}.gnome ~/.gnomecolors
-
-    command -v gconftool-2 >/dev/null 2>&1
-    
-    if [ $? ]; then
-      gconftool-2 --set /apps/gnome-terminal/profiles/Default/palette --type string \"$(cat ~/.gnomecolors)\"
-    fi
-
     xrdb ${dirname}/.${filename}.Xres
   fi
 }
@@ -212,7 +183,6 @@ Actions
 - current:       List the current background
 - ls:            List all wallpapers in the database.
 - colors:        Display the current set of colors.
-- update:        Add any files in the $WALLPAPER_DIR directory. 
 "
 }
 
