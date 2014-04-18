@@ -94,9 +94,13 @@ function add {
   cd $WALLPAPER_DIR
 
   for file in $*; do
+    # The files in $* are full pathnames, appending `.` to the front
+    # generates `./home/<user>/file`, not `.file`
+    # This gets the basename
+    file=$(dirname $file)/$(basename $file)
     if [ ! -e .$file.colors ]; then
-      if [ ! -e .$file.gnome ]; then
-        if [ ! -e .$file.Xres ]; then
+      if [ ! -e .$file.Xres ]; then
+        if [ ! -e .$file.gnome ]; then
           indent "Generating color schemes for $file in $WALLPAPER_DIR"
           python2 $DIR/py/color_detect.py $file
         fi
