@@ -52,6 +52,16 @@ function indent {
   echo ":: $*"
 }
 
+#:: Confirm user input
+function confirm {
+  indent $1
+  read -sn 1 ans
+  case "$ans" in
+    y|Y|yes|YES|Yes) return 0 ;;
+    *)  return 1 ;;
+  esac
+}
+
 #:: Directives
 
 function add {
@@ -80,8 +90,12 @@ function add {
 
 function remove {
   if [ 0 = $# ]; then
-    indent "No file argument provided"
-    exit 1
+    if confirm "Delete current background? [Y/n]"; then
+      remove $(get_current)
+    else
+      echo "exiting"
+      exit 1
+    fi
   fi
 
   for file in $*; do
@@ -116,7 +130,7 @@ function change {
   feh --bg-fill $background
 
   #:: Record the current background
-  ln -sf $background  $WALLPAPER_DIR/.current
+  set_current $background
 
   if [ $? -ne 0 ]; then
     indent "Failed to set $background as background"
@@ -125,12 +139,20 @@ function change {
 
     #:: Set the colorscheme
     ln -f ${dirname}/.${filename}.colors ~/.colors
-    xrdb ${dirname}/.${filename}.Xres
+    xrdb -merge ${dirname}/.${filename}.Xres
   fi
 }
 
 function current {
-  indent $(readlink -f $WALLPAPER_DIR/.current)
+  indent $(get_current)
+}
+
+function get_current {
+  readlink -f $WALLPAPER_DIR/.current
+}
+
+function set_current {
+  ln -sf $1  $WALLPAPER_DIR/.current
 }
 
 function list {
