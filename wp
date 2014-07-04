@@ -91,7 +91,7 @@ function add {
 function remove {
   if [ 0 = $# ]; then
     if confirm "Delete current background? [Y/n]"; then
-      remove $(get_current)
+      remove $(basename $(get_current))
     else
       echo "exiting"
       exit 1
