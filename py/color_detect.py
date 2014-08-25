@@ -3,6 +3,11 @@ import colorsys
 from colorz import colorz
 from math import sqrt
 
+try:
+    import Image
+except ImportError:
+    from PIL import Image
+
 if len(sys.argv) < 2:
   print "Usage: {0} FILENAME [num_colors]".format(sys.argv[0])
   sys.exit()
@@ -14,6 +19,7 @@ WALLPAPER = sys.argv[1]
 filename = WALLPAPER.split('/').pop()
 COLORS = ".{0}.colors".format(filename)
 XRESOURCES = ".{0}.Xres".format(filename)
+SAMPLE = ".{0}.sample.png".format(filename)
 
 cols = ''
 xres = ''
@@ -49,6 +55,27 @@ def to_hsv(c):
     h, s, v = colorsys.rgb_to_hsv(r, g, b)
     return h, s, v
 
+def hex_color_to_rgb(color):
+    color = color[1:] if color[0]=="#" else color
+    return (
+        int(color[:2], 16),
+        int(color[2:4], 16),
+        int(color[4:], 16)
+        )
+
+def create_sample(f, colors):
+    im = Image.new("RGB", (1000, 100), "white")
+    pix = im.load()
+
+    width_sample = im.size[0]/len(colors)
+
+    for i, c in enumerate(colors):
+        for j in range(width_sample*i, width_sample*i+width_sample):
+            for k in range(0, 100):
+                pix[j, k] = hex_color_to_rgb(c)
+
+    im.save(f)
+
 if __name__ == '__main__':
     if len(sys.argv) == 2:
         n = 16
@@ -74,6 +101,7 @@ if __name__ == '__main__':
         cols += """export COLOR{}="{}"\n""".format(i, c)
         i += 1
 
+    create_sample(SAMPLE, colors)
     with open(XRESOURCES, 'w') as f:
         f.write(xres)
     with open(COLORS, 'w') as f:
