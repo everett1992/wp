@@ -13,38 +13,50 @@ function main {
     [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
   done
   DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-
+  K_MEANS=16
   WALLPAPER_DIR=${WALLPAPER_DIR:-~/.wallpapers/}
 
-  prog=$1
-  shift
-
-  case $prog in
-    "usage" | "-h" | "--help")
-      usage
-      ;;
-    "add")
-      add $*
-      ;;
-    "rm" | "remove")
-      remove $*
-      ;;
-    "change")
-      change $*
-      ;;
-    "current")
-      current $*
-      ;;
-    "ls" | "list")
-      list $*
-      ;;
-    "colors")
-      colors
-      ;;
-    *)
-      indent "$prog is not a recognised directive"
-      ;;
-  esac
+  while test $# -gt 0; do
+      case "$1" in
+          usage | -h | --help)
+              shift
+              usage
+              ;;
+          n | -n)
+              shift
+              K_MEANS=$1
+              shift
+              ;;
+          add | -a | --add)
+              shift
+              add $*
+              ;;
+          rm | remove | -rm | --remove)
+              shift
+              remove $*
+              ;;
+          change)
+              shift
+              change $*
+              ;;
+          current)
+              shift
+              current $*
+              ;;
+          ls | list | -l | --list)
+              shift
+              list $*
+              ;;
+          colors)
+              shift
+              colors
+              ;;
+          *)
+              shift
+              indent "$1 is not a recognised directive"
+              ;;
+      esac
+  done
 }
 
 #:: Prety print function
@@ -84,7 +96,7 @@ function add {
 
   for file in $*; do
     echo ":: Generating .$file.colors and .$file.Xres in $PWD"
-    python2 $DIR/py/color_detect.py $file
+    python2 $DIR/py/color_detect.py $file $K_MEANS
   done
 }
 
@@ -172,14 +184,14 @@ function colors {
     ((b>0)) && bg=$((b+39))
 
     echo -en "\033[0m ${BGNAMES[b]} │ "
-    
+
     for f in {0..7}; do
       echo -en "\033[${bg}m\033[$((f+30))m ${FGNAMES[f]} "
     done
-    
+
     echo -en "\033[0m │"
     echo -en "\033[0m\n\033[0m     │ "
-    
+
     for f in {0..7}; do
       echo -en "\033[${bg}m\033[1;$((f+30))m ${FGNAMES[f]} "
     done
@@ -197,9 +209,10 @@ function usage {
   printf "%b" "  $0 [action] [options]
 
 Actions
-- usage:         Print this help massage.
-- add [file]...: Add file, or files, to wallpaper database.
-- rm  [file]...: Remove file, or files, from wallpaper database.
+- usage:         Print this help message.
+- n [number]   : Number of colors to gather.
+- add [file]...: Add file, or files, to the wallpaper database.
+- rm  [file]...: Remove file, or files, from the wallpaper database.
 - change [file]: Set the wallpaper to file, or a random wallpaper
                  from the wallpaper database.
 - current:       List the current background
