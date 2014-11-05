@@ -51,6 +51,10 @@ function main {
               shift
               colors
               ;;
+          slideshow)
+              shift
+              slideshow $*
+              ;;
           *)
               shift
               indent "$1 is not a recognised directive"
@@ -155,6 +159,24 @@ function change {
   fi
 }
 
+function slideshow {
+  if [ -z $2 ]; then
+    PAPERS=$(list)
+  elif [ -e $2 ]; then
+    PAPERS=$(cat $2)
+  else
+    PAPERS=$2
+  fi
+
+  for img in $PAPERS; do
+    change $img
+    if [ ! -z "$1" ]; then
+        /bin/bash -c "$1"
+    fi
+    sleep 7
+  done
+}
+
 function current {
   indent $(get_current)
 }
@@ -209,15 +231,18 @@ function usage {
   printf "%b" "  $0 [action] [options]
 
 Actions
-- usage:         Print this help message.
-- n [number]   : Number of colors to gather.
-- add [file]...: Add file, or files, to the wallpaper database.
-- rm  [file]...: Remove file, or files, from the wallpaper database.
-- change [file]: Set the wallpaper to file, or a random wallpaper
-                 from the wallpaper database.
-- current:       List the current background
-- ls:            List all wallpapers in the database.
-- colors:        Display the current set of colors.
+- usage:                Print this help message.
+- n [number]   :        Number of colors to gather.
+- add [file]...:        Add file, or files, to the wallpaper database.
+- rm  [file]...:        Remove file, or files, from the wallpaper database.
+- change [file]:        Set the wallpaper to file, or a random wallpaper
+                        from the wallpaper database.
+- slideshow [cmd file]: Rotate through wallpapers, optionally
+                        running cmd each time and using only
+                        wallpapers listed in the file.
+- current:              List the current background
+- ls:                   List all wallpapers in the database.
+- colors:               Display the current set of colors.
 "
 }
 
