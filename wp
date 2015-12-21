@@ -15,10 +15,11 @@ function main {
   DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
   K_MEANS=16
   WALLPAPER_DIR=${WALLPAPER_DIR:-~/.wallpapers/}
+  PARAM=$1
 
   while test $# -gt 0; do
       case "$1" in
-          usage | -h | --help)
+          usage | -h | --help | help)
               shift
               usage
               ;;
@@ -57,7 +58,7 @@ function main {
               ;;
           *)
               shift
-              indent "$1 is not a recognised directive"
+              indent "$PARAM is not a recognised directive"
               ;;
       esac
   done
