@@ -17,7 +17,7 @@ function main {
   WALLPAPER_DIR=${WALLPAPER_DIR:-~/.wallpapers/}
   PARAM=$1
 
-  while test $# -gt 0; do
+  if test $# -gt 0; then
       case "$1" in
           usage | -h | --help | help)
               shift
@@ -61,7 +61,7 @@ function main {
               indent "$PARAM is not a recognised directive"
               ;;
       esac
-  done
+  fi
 }
 
 #:: Prety print function
