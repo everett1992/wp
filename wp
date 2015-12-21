@@ -51,7 +51,7 @@ function main {
               slideshow $*
               ;;
           *)
-              indent "$1 is not a recognised directive"
+              indent "$1 is not a recognized directive"
               ;;
       esac
   else
