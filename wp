@@ -16,7 +16,6 @@ function main {
   K_MEANS=16
   WALLPAPER_DIR=${WALLPAPER_DIR:-~/.wallpapers/}
   PARAM=$1
-
   if test $# -gt 0; then
       case "$1" in
           usage | -h | --help | help)
@@ -61,6 +60,8 @@ function main {
               indent "$PARAM is not a recognised directive"
               ;;
       esac
+  else
+      usage
   fi
 }
 
