@@ -14,7 +14,9 @@ function main {
   done
   DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
   K_MEANS=16
-  WALLPAPER_DIR=${WALLPAPER_DIR:-~/.wallpapers/}
+  WALLPAPER_DIR=${WALLPAPER_DIR:-~/.wallpapers}
+  # Get canonical path
+  WALLPAPER_DIR="$(readlink -f "$WALLPAPER_DIR")"
 
   if test $# -gt 0; then
       case "$1" in
@@ -118,7 +120,7 @@ function remove {
   for file in $*; do
     indent "Removing $file"
     rm ${WALLPAPER_DIR}/${file}
-    rm ${WALLPAPER_DIR}/.${file}.{colors,Xres}
+    rm ${WALLPAPER_DIR}/.${file}.{colors,Xres,sample.png}
   done
 }
 
@@ -187,7 +189,7 @@ function get_current {
 }
 
 function set_current {
-  ln -sf $1  $WALLPAPER_DIR/.current
+  ln -sf $1 $WALLPAPER_DIR/.current
 }
 
 function list {
